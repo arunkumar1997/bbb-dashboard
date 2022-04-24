@@ -61,8 +61,8 @@ export default function BasicStack() {
 
   return (
     <Grid container spacing={2} direction="row" justifyContent="center">
-      <Grid item xs={4} sx={{ mt: 25 }}>
-        <Card sx={{ boxShadow: 2, p: 2 }}>
+      <Grid item xs={12} sm={4.5} sx={{ mt: 15 }}>
+        <Card sx={{ boxShadow: 2, mx: { xs: 2, sm: 0 } }}>
           <CardContent>
             <TextField
               variant="standard"
@@ -118,6 +118,6 @@ export default function BasicStack() {
           </CardActions>
         </Card>
       </Grid>
-    </Grid>
+    </Grid >
   );
 }
