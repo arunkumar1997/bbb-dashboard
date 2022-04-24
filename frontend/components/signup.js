@@ -41,7 +41,7 @@ export default function BasicStack() {
       const { jwt, user } = res;
       window.localStorage.setItem("jwt", jwt);
       window.localStorage.setItem("userData", JSON.stringify(user));
-      router.push("/");
+      router.push("/rooms");
     } else if (res.statusCode === 400) {
       setErrors(res.errorMessage);
       setLoading(false);
