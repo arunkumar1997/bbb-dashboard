@@ -15,10 +15,10 @@ const MyApp = (props) => {
 
   return (
     <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={lightTheme}>
+      <ThemeProvider theme={darkTheme}>
         <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+        <Component {...pageProps} />{" "}
+      </ThemeProvider>{" "}
     </CacheProvider>
   );
 };
