@@ -1,0 +1,43 @@
+{
+    "kind": "collectionType",
+    "collectionName": "rooms",
+    "info": {
+        "singularName": "room",
+        "pluralName": "rooms",
+        "displayName": "Room",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "title": {
+            "type": "string"
+        },
+        "description": {
+            "type": "text"
+        },
+        "lastSession": {
+            "type": "string"
+        },
+        "moderatorPassword": {
+            "type": "string"
+        },
+        "attendieePassword": {
+            "type": "string"
+        },
+        "bbbId": {
+            "type": "string"
+        },
+        "roomSettings": {
+            "type": "json"
+        },
+        "owner": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "plugin::users-permissions.user",
+            "inversedBy": "rooms"
+        }
+    }
+}

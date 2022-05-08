@@ -4,10 +4,11 @@ import ResponsiveDrawer from "../../components/Shared/sidebar";
 import RoomDetails from "../../components/Rooms/roomDetails";
 import { getRoomById } from "../../services/roomServices";
 
-export default function Room() {
+export default function Room(props) {
   const router = useRouter();
   const { roomId } = router.query;
   const [room, setRoom] = useState({});
+  const [user, setUser] = useState({})
   const [loading, setLoading] = useState({});
   const fetchRoomById = async (id) => {
     try {
@@ -15,19 +16,21 @@ export default function Room() {
       setRoom(res);
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setRoom(false);
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUser(JSON.parse(localStorage.getItem('userData')))
+    }
     if (!router.isReady) return;
     fetchRoomById(parseInt(roomId));
   }, [router.isReady]);
 
   return (
-    <ResponsiveDrawer>
+    <ResponsiveDrawer {...props} user={user}>
       {loading ? (
         "Loading.."
       ) : room ? (
