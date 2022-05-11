@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -6,11 +7,13 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContentText from '@mui/material/DialogContentText'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { createRoom } from '../../services/roomServices'
-import * as crypto from 'crypto-js'
+import cryptoRandomString from 'crypto-random-string'
 
-export default function CustomizedDialogs({ open, handleModalClose }) {
+export default function CreateRoomMoadal(props) {
   const [loading, setLoading] = useState(false)
+  const { open, handleModalClose, jwt, user } = props
   const [errors, setErrors] = useState('')
   const [values, setValues] = useState({
     title: '',
@@ -25,14 +28,31 @@ export default function CustomizedDialogs({ open, handleModalClose }) {
   }
 
   const handleCreateRoom = async () => {
-    const res = await createRoom({
-      title: values.title,
-      description: values.description,
-      moderatorPassword: values.moderatorPassword,
-      attendieePassword: values.attendieePassword,
-      bbbId: crypto.randomBytes(8).toString('hex'),
-    })
-    console.log(res)
+    setLoading(true)
+    const bbbId = `${cryptoRandomString({ length: 10 })}-${cryptoRandomString({
+      length: 4,
+    })}`
+    const res = await createRoom(
+      {
+        title: values.title,
+        description: values.description,
+        moderatorPassword: values.moderatorPassword,
+        attendieePassword: values.attendieePassword,
+        bbbId: bbbId,
+        owner: user.id,
+      },
+      jwt
+    )
+    if (res.statsCode === 200) {
+      setLoading(false)
+      handleModalClose()
+    } else if (res.statusCode === 400) {
+      setErrors(res.errorMessage)
+      setLoading(false)
+    } else {
+      setErrors('Something went wrong. Please try again after some time')
+      setLoading(false)
+    }
   }
 
   return (
@@ -52,6 +72,7 @@ export default function CustomizedDialogs({ open, handleModalClose }) {
             type="text"
             fullWidth
             variant="standard"
+            onChange={handleChange('title')}
           />
           <TextField
             autoFocus
@@ -61,6 +82,7 @@ export default function CustomizedDialogs({ open, handleModalClose }) {
             type="description"
             fullWidth
             variant="standard"
+            onChange={handleChange('description')}
           />
           <TextField
             autoFocus
@@ -70,6 +92,7 @@ export default function CustomizedDialogs({ open, handleModalClose }) {
             type="moderatorPassword"
             fullWidth
             variant="standard"
+            onChange={handleChange('moderatorPassword')}
           />
           <TextField
             autoFocus
@@ -79,11 +102,21 @@ export default function CustomizedDialogs({ open, handleModalClose }) {
             type="attendieePassword"
             fullWidth
             variant="standard"
+            onChange={handleChange('attendieePassword')}
           />
         </DialogContent>
+        <Typography component="div" sx={{ color: 'red' }}>
+          {errors}
+        </Typography>
         <DialogActions>
           <Button onClick={handleModalClose}>Cancel</Button>
-          <Button onClick={handleModalClose}>Subscribe</Button>
+          <LoadingButton
+            onClick={handleCreateRoom}
+            loading={loading}
+            variant="contained"
+          >
+            Create Class
+          </LoadingButton>
         </DialogActions>
       </Dialog>
     </div>

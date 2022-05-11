@@ -3,10 +3,10 @@ import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import RoomCard from './roomCard'
-import CustomizedDialogs from './createRoomModal'
+import CreateRoomMoadal from './createRoomModal'
 import { getRooms } from '../../services/roomServices'
 
-export default function RoomGrid() {
+export default function RoomGrid(props) {
   const [rooms, setRooms] = useState([])
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
@@ -14,13 +14,13 @@ export default function RoomGrid() {
   useEffect(() => {
     async function fetchRooms() {
       const res = await getRooms()
-      setRooms(res)
+      setRooms(res.data)
       setLoading(false)
     }
     fetchRooms()
   }, [])
 
-  const showRooms = (rooms) => {
+  function showRooms(rooms) {
     if (rooms && rooms.length > 0) {
       rooms.map((room) => {
         return (
@@ -52,14 +52,37 @@ export default function RoomGrid() {
 
   return (
     <Box sx={{ flexGrow: 0 }}>
-      <CustomizedDialogs open={open} handleModalClose={handleModalClose} />
+      <CreateRoomMoadal
+        {...props}
+        open={open}
+        handleModalClose={handleModalClose}
+      />
       <Grid
         container
         spacing={2}
         rowGap={2}
         direction={{ xs: 'column', md: 'row', sm: 'column' }}
       >
-        {loading ? 'Loading...' : showRooms(rooms)}
+        {loading ? (
+          'Loading...'
+        ) : rooms && rooms.length > 0 ? (
+          rooms.map((room) => {
+            return (
+              <Grid key={room.id} item xs={12} md={6} lg={4}>
+                <RoomCard room={room} />
+              </Grid>
+            )
+          })
+        ) : (
+          <Button
+            variant="text"
+            onClick={() => {
+              setOpen(true)
+            }}
+          >
+            Create a Room
+          </Button>
+        )}
       </Grid>
     </Box>
   )

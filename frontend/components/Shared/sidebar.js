@@ -24,7 +24,6 @@ import VideocamIcon from '@mui/icons-material/Videocam'
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { useRouter } from 'next/router'
-const settings = ['Profile', 'Subscription', 'Need Help?', 'Logout']
 const getIcon = (text) => {
   const icons = {
     Rooms: <SchoolIcon />,
@@ -47,10 +46,8 @@ function ResponsiveDrawer(props) {
   const [anchorElUser, setAnchorElUser] = useState(null)
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      setUser(JSON.parse(localStorage.removeItem('userData')))
-      setUser(JSON.parse(localStorage.removeItem('jwt')))
-    }
+    localStorage.removeItem('jwt')
+    localStorage.removeItem('userData')
     router.push('/')
   }
 
@@ -90,7 +87,7 @@ function ResponsiveDrawer(props) {
                 <ListItemText primary={text} />
               </Link>
             </ListItem>
-          ),
+          )
         )}
       </List>
       <Divider />
