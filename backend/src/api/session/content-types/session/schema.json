@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sessions",
+  "info": {
+    "singularName": "session",
+    "pluralName": "sessions",
+    "displayName": "session"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "bbbId": {
+      "type": "string"
+    },
+    "recordId": {
+      "type": "string"
+    },
+    "recorded": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

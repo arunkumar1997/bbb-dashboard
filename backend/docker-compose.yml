@@ -1,9 +1,11 @@
-version: '3'
+version: "3"
 
 services:
   db:
     image: postgres:13-alpine
     restart: unless-stopped
+    volumes:
+      - ../data:/var/lib/postgresql/data
     ports:
       - 127.0.0.1:5432:5432
     environment:

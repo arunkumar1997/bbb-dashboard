@@ -133,6 +133,8 @@ export default function BasicStack() {
                   initsignup({
                     email: values.email,
                     password: values.password,
+                    firstName: values.firstName,
+                    lastName: values.lastName,
                   })
                 }
                 loading={loading}

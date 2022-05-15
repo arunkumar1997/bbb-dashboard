@@ -12,19 +12,13 @@ const clientSideEmotionCache = createEmotionCache()
 
 const MyApp = (props) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
-  const [user, setUser] = useState({})
-  const [jwt, setJWT] = useState({})
-  useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem('userData')))
-    setJWT(localStorage.getItem('jwt'))
-  }, [])
 
   return (
     <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={lightTheme}>
         <CssBaseline />
-        <Component {...pageProps} user={user} jwt={jwt} />{' '}
-      </ThemeProvider>{' '}
+        <Component {...pageProps} />
+      </ThemeProvider>
     </CacheProvider>
   )
 }

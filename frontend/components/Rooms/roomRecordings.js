@@ -19,16 +19,16 @@ const columns = [
     format: (value) => value.toLocaleString('en-US'),
   },
   {
-    id: 'formate',
-    label: 'Formate',
+    id: 'action',
+    label: 'Action',
     minWidth: 170,
     align: 'left',
     format: (value) => value.toLocaleString('en-US'),
   },
 ]
 
-function createData(name, length, peoples, formate) {
-  return { name, length, peoples, formate }
+function createData(name, length, peoples, action) {
+  return { name, length, peoples, action }
 }
 
 const rows = [

@@ -40,6 +40,12 @@ export default function CreateRoomMoadal(props) {
         attendieePassword: values.attendieePassword,
         bbbId: bbbId,
         owner: user.id,
+        roomSettings: {
+          record: true,
+          muteOnStart: false,
+          skipAudioCheck: false,
+          chatStartClosed: false,
+        },
       },
       jwt
     )
