@@ -1,2 +1,2 @@
 NEXT_PUBLIC_BBB_URL=https://bbb.example.com/bigbluebutton/api
-NEXT_PUBLIC_BBB_SECRET=8cd8ef52e8e101574e400365b55e11a6
+NEXT_PUBLIC_BBB_SECRET=bbb-secret
