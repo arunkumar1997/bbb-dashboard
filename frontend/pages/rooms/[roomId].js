@@ -43,7 +43,7 @@ export default function Room(props) {
         {loading ? (
           'Loading..'
         ) : room ? (
-          <RoomDetails room={room} jwt={jwt} roomId={roomId} />
+          <RoomDetails user={user} room={room} jwt={jwt} roomId={roomId} />
         ) : (
           'No Room found'
         )}

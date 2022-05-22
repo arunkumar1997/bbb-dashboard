@@ -21,6 +21,8 @@ export default function RoomCard({ room, user }) {
       attendeePW: room.attributes.attendieePassword,
       moderatorPW: room.attributes.moderatorPassword,
       logoutUrl: new URL(window.location.href).origin,
+      record: room.roomSettings.record,
+      muteOnStart: room.roomSettings.muteOnStart,
     }
     const res = await axios.post('/api/bbb/start', createParams)
     if (res.status != 200) {
@@ -31,6 +33,9 @@ export default function RoomCard({ room, user }) {
       meetingID: room.attributes.bbbId,
       fullName: `${user.firstName} ${user.lastName}`,
       password: room.attributes.moderatorPassword,
+      'userdata-bbb_skip_check_audio': room.roomSettings.skipAudioCheck,
+      'userdata-bbb_show_public_chat_on_login':
+        room.roomSettings.chatStartClosed,
     }
     const joinUrl = joinMeeting(joinParams)
     if (joinUrl) {

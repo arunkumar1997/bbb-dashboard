@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import { Typography } from '@mui/material'
 import Button from '@mui/material/Button'
+import LoadingButton from '@mui/lab/LoadingButton'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SaveIcon from '@mui/icons-material/Save'
@@ -17,7 +18,14 @@ import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import Checkbox from '@mui/material/Checkbox'
-import { updateRoom } from '../../services/roomServices'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import axios from 'axios'
+import { updateRoom, deleteRoomById } from '../../services/roomServices'
+import { joinMeeting } from '../../services/bbbServices'
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
@@ -45,10 +53,12 @@ function a11yProps(index) {
   }
 }
 
-export default function RoomDetails({ room, jwt, roomId }) {
+export default function RoomDetails({ room, jwt, roomId, user }) {
   const router = useRouter()
   const [value, setValue] = useState(0)
   const [showAlert, setAlert] = useState(false)
+  const [loadingButton, setLoadingButton] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const [alertMessage, setAlertMessage] = useState(
     'Room Setting Updated Successfully'
   )
@@ -59,6 +69,11 @@ export default function RoomDetails({ room, jwt, roomId }) {
   const handleCheckBoxChange = (prop) => (event) => {
     setState({ ...state, [prop]: event.target.checked })
     setSaveButton(false)
+  }
+
+  const handleModalClose = (id) => {
+    setModalOpen(false)
+    handleDelete(id)
   }
 
   const handleSave = async () => {
@@ -75,8 +90,48 @@ export default function RoomDetails({ room, jwt, roomId }) {
     }
   }
 
+  const handleDelete = async (id) => {
+    const res = await deleteRoomById(id, jwt)
+    if (res.statsCode == 500) {
+      setAlertMessage('Unable to delete the room, try again after some time.')
+      setError(true)
+      setAlert(true)
+    } else {
+      router.push('/rooms')
+    }
+  }
+
   const handleTabChange = (event, newValue) => {
     setValue(newValue)
+  }
+  async function handleStart() {
+    setLoadingButton(true)
+    const createParams = {
+      name: room.title,
+      meetingID: room.bbbId,
+      attendeePW: room.attendieePassword,
+      moderatorPW: room.moderatorPassword,
+      logoutUrl: new URL(window.location.href).origin,
+      record: room.roomSettings.record,
+      muteOnStart: room.roomSettings.muteOnStart,
+    }
+    const res = await axios.post('/api/bbb/start', createParams)
+    if (res.status != 200) {
+      alert('Something went wrong, Please check bbb details')
+      return
+    }
+    const joinParams = {
+      meetingID: room.bbbId,
+      fullName: `${user.firstName} ${user.lastName}`,
+      password: room.moderatorPassword,
+      'userdata-bbb_skip_check_audio': room.roomSettings.skipAudioCheck,
+      'userdata-bbb_show_public_chat_on_login':
+        room.roomSettings.chatStartClosed,
+    }
+    const joinUrl = joinMeeting(joinParams)
+    if (joinUrl) {
+      window.location.href = joinUrl
+    }
   }
   return (
     <Box sx={{ width: '100%' }}>
@@ -101,6 +156,40 @@ export default function RoomDetails({ room, jwt, roomId }) {
           {alertMessage}
         </Alert>
       </Snackbar>
+      <Dialog
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false)
+        }}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {` Do you really want to delete ${room.title}?`}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {'Once deleted rooms cannot be recovered'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setModalOpen(false)
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleModalClose(roomId)
+            }}
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Stack
         direction="column"
         justifyContent="space-evenly"
@@ -128,20 +217,18 @@ export default function RoomDetails({ room, jwt, roomId }) {
           >
             {value == 0 ? (
               <>
-                <Button
+                <LoadingButton
                   variant="contained"
-                  onClick={() => {
-                    setOpen(true)
-                  }}
+                  loading={loadingButton}
+                  onClick={handleStart}
                   endIcon={<PlayArrowIcon />}
+                  loadingPosition="end"
                 >
-                  Start
-                </Button>
+                  {loadingButton ? 'Starting' : 'Start'}
+                </LoadingButton>
                 <Button
                   variant="contained"
-                  onClick={() => {
-                    setOpen(true)
-                  }}
+                  onClick={() => setModalOpen(true)}
                   endIcon={<DeleteIcon />}
                 >
                   Delete
@@ -179,7 +266,7 @@ export default function RoomDetails({ room, jwt, roomId }) {
             </Tabs>
           </Box>
           <TabPanel value={value} index={0}>
-            <RoomRecordingTable />
+            <RoomRecordingTable meetingId={room.bbbId} />
           </TabPanel>
           <TabPanel value={value} index={1}>
             <Box sx={{ display: 'flex' }}>

@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 export default function RoomGrid(props) {
   const [rooms, setRooms] = useState([])
   const [user, setUser] = useState({})
+  const [jwt, setJwt] = useState('')
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
 
@@ -19,6 +20,7 @@ export default function RoomGrid(props) {
     async function fetchRooms(id, jwt) {
       const res = await getRooms(id, jwt)
       setUser(userData)
+      setJwt(jwt)
       setRooms(res.data)
       setLoading(false)
     }
@@ -39,6 +41,7 @@ export default function RoomGrid(props) {
       <CreateRoomMoadal
         {...props}
         user={user}
+        jwt={jwt}
         open={open}
         handleModalClose={handleModalClose}
       />
